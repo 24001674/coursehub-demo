@@ -62,3 +62,37 @@ def search_courses(keyword):
             results.append(course)
     return results
 print(search_courses("web"))
+
+def find_student(student_id):
+    for student in students:
+        if student["id"] == student_id:
+            return student
+    return None
+
+def enroll_student(student_id, course_code):
+    if find_student(student_id) is None :
+        return False, "Ma sinh vien khong ton tai"
+    course = find_course(course_code)
+    if course is None:
+        return False, "Ma hoc phan khong ton tai"
+    
+    duplicated = any(
+        item["student_id"] == student_id and item["course_code"] == course_code
+        for item in enrollments
+    )
+    if duplicated:
+        return False, "Sinh vien da dang ky hoc phan nay"
+    
+    if course["enrolled"] >= course["capacity"]:
+            return False, "Lop da du so luong"
+    
+    enrollments.append({"student_id": student_id, "course_code": course_code})
+    course["enrolled"] += 1
+    return True, f"Sinh vien {student_id} dang ky thanh cong {course_code}"
+
+print("\n --- KIEM TRA CHUONG TRINH ---")
+print("TH1:", enroll_student("22000002", "INT2204")) # Thành công
+print("TH2:", enroll_student("22000001", "INT2204")) # Trùng
+print("TH3:", enroll_student("22000001", "INT2205")) # Lớp đầy
+print("TH4:", enroll_student("22000001", "INT9999")) # Sai mã HP
+print("TH5:", enroll_student("99999999", "INT2204")) # Sai mã SV
